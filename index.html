@@ -2,304 +2,912 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Un filo per te</title>
-
 <style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+:root{
+  --rose:#ff4d6d;
+  --rose-dark:#c9184a;
+  --gold:#ffd36b;
+  --gold-glow:#ffb703;
+  --navy:#050712;
+  --navy2:#0b1430;
+  --navy3:#182042;
+  --text:#f0e6ff;
+  --muted:rgba(240,230,255,0.55);
+}
+
 html,body{
-margin:0;
-padding:0;
-overflow:hidden;
-background:#050712;
-font-family: Georgia, serif;
-color:white;
+  width:100%;height:100%;
+  overflow:hidden;
+  background:var(--navy);
+  font-family:'Georgia',serif;
+  color:var(--text);
 }
 
-canvas{display:block;}
+canvas{display:block;position:fixed;inset:0;}
 
-/* INTRO */
+/* ─── SCREENS ─── */
 .screen{
-position:fixed;
-inset:0;
-display:flex;
-align-items:center;
-justify-content:center;
-flex-direction:column;
-text-align:center;
-background:radial-gradient(circle at center,#0b1430,#050712);
-z-index:10;
+  position:fixed;inset:0;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  text-align:center;
+  padding:24px;
+  z-index:20;
+  background:radial-gradient(ellipse at 50% 40%,#0f1e45,var(--navy) 75%);
+  transition:opacity .5s ease;
+}
+.screen.fade-out{opacity:0;pointer-events:none;}
+.screen.hidden{display:none;}
+
+.screen h1{
+  font-size:clamp(20px,5vw,32px);
+  font-weight:400;
+  letter-spacing:3px;
+  margin-bottom:10px;
+  color:var(--text);
+}
+.screen p{
+  font-size:clamp(13px,3.5vw,16px);
+  color:var(--muted);
+  max-width:320px;
+  line-height:1.6;
+  margin-bottom:8px;
 }
 
-.hidden{display:none;}
-
-h1{font-size:22px; letter-spacing:2px;}
-p{opacity:0.7; max-width:80%;}
-
-button{
-margin-top:15px;
-padding:12px 18px;
-border:1px solid white;
-background:transparent;
-color:white;
-border-radius:8px;
-cursor:pointer;
+/* star divider */
+.divider{
+  color:var(--gold);
+  letter-spacing:12px;
+  margin:14px 0;
+  font-size:14px;
 }
 
-/* TOUCH */
+/* ─── BUTTONS ─── */
+.btn{
+  display:inline-block;
+  margin-top:20px;
+  padding:13px 32px;
+  font-family:'Georgia',serif;
+  font-size:15px;
+  letter-spacing:1.5px;
+  color:var(--text);
+  background:transparent;
+  border:1px solid rgba(240,230,255,0.4);
+  border-radius:40px;
+  cursor:pointer;
+  transition:background .2s, border-color .2s, transform .1s;
+  -webkit-appearance:none;
+}
+.btn:hover{background:rgba(255,255,255,0.07);border-color:rgba(240,230,255,0.7);}
+.btn:active{transform:scale(0.97);}
+.btn-gold{border-color:var(--gold);color:var(--gold);}
+.btn-gold:hover{background:rgba(255,211,107,0.1);}
+
+/* ─── PROGRESS BAR ─── */
+#hud{
+  position:fixed;top:0;left:0;right:0;
+  display:flex;align-items:center;gap:12px;
+  padding:12px 20px;
+  z-index:10;
+  pointer-events:none;
+}
+#progress-track{
+  flex:1;height:4px;
+  background:rgba(255,255,255,0.1);
+  border-radius:4px;
+  overflow:hidden;
+}
+#progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--rose),var(--gold));
+  border-radius:4px;
+  width:0%;
+  transition:width .3s ease;
+}
+#hud-label{
+  font-size:12px;letter-spacing:1px;color:var(--muted);white-space:nowrap;
+}
+
+/* ─── MOBILE CONTROLS ─── */
 #controls{
-position:fixed;
-bottom:15px;
-width:100%;
-display:flex;
-justify-content:space-between;
-padding:0 25px;
-z-index:5;
+  position:fixed;bottom:0;left:0;right:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 24px 24px;
+  z-index:10;
+  pointer-events:none;
 }
+.ctrl-group{display:flex;gap:10px;pointer-events:all;}
 
 .ctrl{
-width:60px;
-height:60px;
-border:1px solid white;
-border-radius:12px;
-display:flex;
-align-items:center;
-justify-content:center;
-opacity:0.4;
-user-select:none;
+  width:58px;height:58px;
+  border:1px solid rgba(240,230,255,0.25);
+  border-radius:16px;
+  background:rgba(10,16,42,0.7);
+  backdrop-filter:blur(6px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  color:rgba(240,230,255,0.7);
+  user-select:none;
+  cursor:pointer;
+  touch-action:none;
+  transition:background .1s,border-color .1s;
+}
+.ctrl:active,.ctrl.active{
+  background:rgba(255,77,109,0.2);
+  border-color:rgba(255,77,109,0.6);
+}
+#jump-btn{
+  width:70px;height:70px;
+  border-radius:50%;
+  border-color:rgba(255,211,107,0.35);
+  font-size:26px;
+}
+#jump-btn:active{background:rgba(255,211,107,0.15);border-color:var(--gold);}
+
+/* ─── INTRO STARS ─── */
+.stars-bg{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+}
+.star{
+  position:absolute;
+  border-radius:50%;
+  background:white;
+  animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
+  opacity:0;
+}
+@keyframes twinkle{
+  0%,100%{opacity:0;}
+  50%{opacity:var(--max-op,0.8);}
 }
 
-/* skip */
-#skip{
-position:fixed;
-top:15px;
-right:15px;
-z-index:20;
+/* ─── END / ROOM ─── */
+.room-grid{
+  display:flex;flex-direction:column;gap:14px;width:100%;max-width:300px;
+}
+
+/* ─── PHOTO OVERLAY ─── */
+#photo{
+  background:rgba(5,7,18,0.97);
+}
+#photo img{
+  max-width:min(80vw,320px);
+  max-height:50vh;
+  border-radius:12px;
+  object-fit:cover;
+  border:1px solid rgba(255,211,107,0.3);
+  display:block;
+  margin:0 auto;
+}
+#photo .caption{
+  font-style:italic;
+  color:var(--gold);
+  letter-spacing:0.5px;
+  margin-top:6px;
+  font-size:15px;
+}
+
+/* ─── GIFT ─── */
+#gift .gift-box{
+  font-size:52px;
+  animation:bounce 1.5s ease-in-out infinite;
+  margin-bottom:10px;
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-10px);}
+}
+#gift h2{
+  font-size:clamp(18px,5vw,26px);
+  color:var(--gold);
+  letter-spacing:2px;
+  margin:10px 0;
+  font-weight:400;
+}
+
+/* ─── FLOATING HEARTS (win) ─── */
+.heart{
+  position:fixed;
+  pointer-events:none;
+  font-size:clamp(16px,4vw,24px);
+  animation:floatHeart 2.5s ease-out forwards;
+  z-index:30;
+}
+@keyframes floatHeart{
+  0%{transform:translateY(0) scale(1);opacity:1;}
+  100%{transform:translateY(-60vh) scale(0.5);opacity:0;}
+}
+
+/* ─── DEATH FLASH ─── */
+#death-flash{
+  position:fixed;inset:0;
+  background:rgba(255,30,30,0.25);
+  pointer-events:none;
+  z-index:25;
+  opacity:0;
+  transition:opacity .15s;
 }
 </style>
 </head>
-
 <body>
 
-<!-- MUSIC -->
 <audio id="bgm" loop>
-<source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b2c7c2.mp3" type="audio/mp3">
+  <source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b2c7c2.mp3" type="audio/mp3">
 </audio>
 
-<div class="screen" id="intro">
-<h1>Un filo del destino ti guida</h1>
-<p>Tre prove. Una sola verità nascosta.</p>
-<button onclick="start()">Inizia il viaggio</button>
+<!-- DEATH FLASH -->
+<div id="death-flash"></div>
+
+<!-- HUD -->
+<div id="hud">
+  <span id="hud-label">✦ percorso</span>
+  <div id="progress-track"><div id="progress-fill"></div></div>
+  <span id="hud-label" style="font-size:11px;color:var(--muted);" id="lives-display">♥ ♥ ♥</span>
 </div>
 
-<div id="controls">
-<div class="ctrl" onpointerdown="keys.left=true" onpointerup="keys.left=false">◀</div>
-<div class="ctrl" onpointerdown="jump()">⤒</div>
-<div class="ctrl" onpointerdown="keys.right=true" onpointerup="keys.right=false">▶</div>
-</div>
-
-<button id="skip" onclick="win()">SKIP ⏩</button>
-
+<!-- CANVAS -->
 <canvas id="game"></canvas>
 
-<!-- END -->
+<!-- MOBILE CONTROLS -->
+<div id="controls">
+  <div class="ctrl-group">
+    <div class="ctrl" id="btn-left">◀</div>
+    <div class="ctrl" id="btn-right">▶</div>
+  </div>
+  <div id="jump-btn" class="ctrl">⤒</div>
+</div>
+
+<!-- ─── INTRO ─── -->
+<div class="screen" id="intro">
+  <div class="stars-bg" id="stars-container"></div>
+  <h1>Un filo del destino</h1>
+  <div class="divider">✦ ✦ ✦</div>
+  <p>Tre prove. Un solo segreto nascosto tra le stelle.</p>
+  <p style="font-size:12px;color:var(--muted);margin-top:4px;">← → muoversi &nbsp;|&nbsp; Spazio / ⤒ saltare</p>
+  <button class="btn btn-gold" onclick="startGame()">Inizia il viaggio</button>
+</div>
+
+<!-- ─── DEATH ─── -->
+<div class="screen hidden" id="death-screen">
+  <h1 style="font-size:28px;">✦</h1>
+  <p style="font-size:18px;margin-bottom:6px;">Sei caduto nel vuoto</p>
+  <p>Ma il filo ti riporta sempre qui.</p>
+  <button class="btn" onclick="respawn()">Riprovare</button>
+</div>
+
+<!-- ─── END ─── -->
 <div class="screen hidden" id="end">
-<h1>Hai raggiunto la lanterna</h1>
-<p>Una stanza segreta si apre nel silenzio…</p>
-<button onclick="openRoom()">Entrare</button>
+  <h1>Hai raggiunto la lanterna</h1>
+  <div class="divider">✦</div>
+  <p>Una stanza segreta si apre nel silenzio…</p>
+  <button class="btn btn-gold" onclick="openRoom()">Entrare</button>
 </div>
 
-<!-- ROOM -->
+<!-- ─── ROOM ─── -->
 <div class="screen hidden" id="room">
-<h1>Stanza segreta</h1>
-<button onclick="showPhoto()">📖 Diario del Viaggiatore</button>
-<button onclick="showGift()">🕸️ Sigillo Intrecciato</button>
+  <h1 style="font-size:20px;margin-bottom:4px;">Stanza segreta</h1>
+  <p style="margin-bottom:20px;">Cosa vuoi aprire?</p>
+  <div class="room-grid">
+    <button class="btn" onclick="showPhoto()">📖 &nbsp;Diario del Viaggiatore</button>
+    <button class="btn btn-gold" onclick="showGift()">🎁 &nbsp;Sigillo Intrecciato</button>
+  </div>
 </div>
 
-<!-- PHOTO -->
+<!-- ─── PHOTO ─── -->
 <div class="screen hidden" id="photo">
-<h1>Per te ❤️</h1>
-<p>Ovunque vada, torno sempre da te.</p>
-<img src="foto_coppia.JPG" style="max-width:80%;border-radius:10px;">
-<br>
-<button onclick="back()">Chiudi</button>
+  <h1 style="color:var(--gold);font-size:20px;margin-bottom:6px;">Per te ❤️</h1>
+  <p class="caption">Ovunque vada, torno sempre da te.</p>
+  <div style="margin:18px 0;">
+    <img src="foto_coppia.JPG" alt="La nostra foto">
+  </div>
+  <button class="btn" onclick="closePhoto()">✕ &nbsp;Chiudi</button>
+  <button class="btn" style="margin-top:10px;font-size:13px;opacity:0.6;" onclick="showRoom()">← Torna alla stanza</button>
 </div>
 
-<!-- GIFT -->
+<!-- ─── GIFT ─── -->
 <div class="screen hidden" id="gift">
-<h1>THREADS CONNECTED</h1>
-<p>analisi completata…</p>
-<h2>🎾 LEZIONE DI TENNIS INSIEME</h2>
-<p>Le avventure più belle non si trovano. Si condividono.</p>
-<br>
-<button onclick="location.reload()">Rigioca</button>
+  <div class="gift-box">🎾</div>
+  <h1 style="letter-spacing:2px;font-size:18px;">Sigillo svelato</h1>
+  <div class="divider">✦</div>
+  <h2>Lezione di tennis insieme</h2>
+  <p>Le avventure più belle non si trovano.<br>Si condividono, un punto alla volta.</p>
+  <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;justify-content:center;">
+    <button class="btn btn-gold" onclick="location.reload()">↺ Rigioca</button>
+    <button class="btn" onclick="showRoom()">← Stanza</button>
+  </div>
 </div>
 
 <script>
+/* ═══════════════════════════════════════
+   STARS BACKGROUND
+═══════════════════════════════════════ */
+(function(){
+  const c = document.getElementById('stars-container');
+  for(let i=0;i<80;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const size = Math.random()*2.5+0.5;
+    s.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      --d:${(Math.random()*3+2).toFixed(1)}s;
+      --delay:-${(Math.random()*5).toFixed(1)}s;
+      --max-op:${(Math.random()*0.6+0.2).toFixed(2)};
+    `;
+    c.appendChild(s);
+  }
+})();
 
-const c=document.getElementById("game");
-const ctx=c.getContext("2d");
+/* ═══════════════════════════════════════
+   CANVAS SETUP
+═══════════════════════════════════════ */
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+let W, H;
 
 function resize(){
-c.width=innerWidth;
-c.height=innerHeight;
+  W = canvas.width = innerWidth;
+  H = canvas.height = innerHeight;
 }
-window.onresize=resize;
+window.addEventListener('resize', resize);
 resize();
 
-/* PLAYER */
-let p={
-x:50,y:200,w:18,h:18,
-vx:0,vy:0,
-onGround:false,
-t:0
-};
+/* ═══════════════════════════════════════
+   GAME STATE
+═══════════════════════════════════════ */
+const GRAVITY   = 0.52;
+const JUMP_POWER= 12.5;
+const SPEED     = 3.8;
+const LEVEL_W   = 3600;
 
-let keys={left:false,right:false};
+let state = 'menu';
+let lives = 3;
+let camX  = 0;
+let particles = [];
+let tick = 0;
+let raf = null;
 
-/* PLATFORM */
-let plat=[
-{x:0,y:340,w:220,h:20},
-{x:260,y:280,w:200,h:20},
-{x:520,y:230,w:200,h:20},
-{x:780,y:180,w:200,h:20}
+/* Player */
+const P_W = 18, P_H = 22;
+let player;
+
+function resetPlayer(){
+  player = {
+    x:90, y:0,
+    vx:0, vy:0,
+    onGround:false,
+    coyoteTime:0,
+    jumpBuffer:0,
+    t:0,
+    trail:[]
+  };
+}
+
+/* ═══════════════════════════════════════
+   LEVEL DESIGN (harder)
+   Platforms: {x,y,w,h}
+   Spikes:    {x,y,w,h}  (kill player)
+   Moving:    {x,y,w,h, x0,x1,speed,dir}
+═══════════════════════════════════════ */
+const platforms = [
+  /* ground section */
+  {x:0,   y:520, w:280, h:20},
+  {x:340, y:460, w:120, h:20},
+  {x:510, y:400, w:100, h:20},
+  {x:680, y:340, w:100, h:20},
+  {x:850, y:290, w:90,  h:20},
+  /* gap / precision */
+  {x:1010,y:240, w:70,  h:20},
+  {x:1140,y:290, w:70,  h:20},
+  {x:1270,y:220, w:70,  h:20},
+  /* longer safe platform */
+  {x:1420,y:310, w:160, h:20},
+  /* descending then ascending */
+  {x:1660,y:380, w:80,  h:20},
+  {x:1810,y:320, w:80,  h:20},
+  {x:1960,y:260, w:80,  h:20},
+  {x:2100,y:200, w:80,  h:20},
+  /* tight jumps */
+  {x:2250,y:260, w:55,  h:20},
+  {x:2380,y:200, w:55,  h:20},
+  {x:2510,y:260, w:55,  h:20},
+  {x:2640,y:310, w:55,  h:20},
+  /* rest platform */
+  {x:2780,y:350, w:160, h:20},
+  /* final climb */
+  {x:3020,y:290, w:80,  h:20},
+  {x:3160,y:230, w:80,  h:20},
+  {x:3300,y:170, w:80,  h:20},
+  {x:3440,y:110, w:160, h:20},
 ];
 
-let goal={x:920,y:120,w:25,h:25};
+/* Moving platforms */
+const movingPlats = [
+  {x:600, y:490, w:90, h:18, x0:600, x1:760, speed:1.2, dir:1},
+  {x:1800,y:400, w:80, h:18, x0:1750,x1:1950,speed:1.5, dir:1},
+  {x:3100,y:340, w:80, h:18, x0:3050,x1:3200,speed:1.8, dir:1},
+];
 
-let camX=0;
+/* Spikes */
+const spikes = [
+  {x:280, y:514, w:60,  h:6},
+  {x:490, y:394, w:20,  h:6},
+  {x:1000,y:234, w:10,  h:6},
+  {x:1265,y:214, w:10,  h:6},
+  {x:2240,y:254, w:10,  h:6},
+  {x:2640,y:304, w:10,  h:6},
+  {x:3295,y:164, w:10,  h:6},
+];
 
-/* MUSIC START */
-function start(){
-document.getElementById("intro").classList.add("hidden");
+/* Goal lantern */
+const goal = {x:3470, y:55, w:30, h:55};
 
-let music=document.getElementById("bgm");
-music.volume=0.4;
-music.play().catch(()=>{});
+/* ═══════════════════════════════════════
+   INPUT
+═══════════════════════════════════════ */
+const keys = {left:false, right:false, jump:false};
 
-loop();
-}
-
-function jump(){
-if(p.onGround){
-p.vy=-11;
-p.onGround=false;
-}
-}
-
-document.addEventListener("keydown",e=>{
-if(e.key==="ArrowLeft")keys.left=true;
-if(e.key==="ArrowRight")keys.right=true;
-if(e.key===" ")jump();
+document.addEventListener('keydown', e=>{
+  if(e.key==='ArrowLeft'||e.key==='a')  keys.left=true;
+  if(e.key==='ArrowRight'||e.key==='d') keys.right=true;
+  if(e.key===' '||e.key==='ArrowUp'||e.key==='w'){
+    e.preventDefault();
+    keys.jump=true;
+    player.jumpBuffer=10;
+  }
+});
+document.addEventListener('keyup', e=>{
+  if(e.key==='ArrowLeft'||e.key==='a')  keys.left=false;
+  if(e.key==='ArrowRight'||e.key==='d') keys.right=false;
+  if(e.key===' '||e.key==='ArrowUp'||e.key==='w') keys.jump=false;
 });
 
-document.addEventListener("keyup",e=>{
-if(e.key==="ArrowLeft")keys.left=false;
-if(e.key==="ArrowRight")keys.right=false;
-});
+/* Mobile */
+function bindBtn(id, key){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('pointerdown', e=>{ e.preventDefault(); keys[key]=true; el.classList.add('active'); });
+  el.addEventListener('pointerup',   e=>{ keys[key]=false; el.classList.remove('active'); });
+  el.addEventListener('pointerleave',e=>{ keys[key]=false; el.classList.remove('active'); });
+}
+bindBtn('btn-left','left');
+bindBtn('btn-right','right');
 
-/* UPDATE */
+document.getElementById('jump-btn').addEventListener('pointerdown', e=>{
+  e.preventDefault();
+  player.jumpBuffer=10;
+  document.getElementById('jump-btn').classList.add('active');
+});
+document.getElementById('jump-btn').addEventListener('pointerup',   ()=>document.getElementById('jump-btn').classList.remove('active'));
+document.getElementById('jump-btn').addEventListener('pointerleave',()=>document.getElementById('jump-btn').classList.remove('active'));
+
+/* ═══════════════════════════════════════
+   PHYSICS / UPDATE
+═══════════════════════════════════════ */
 function update(){
+  tick++;
+  player.t += 0.12;
 
-p.t+=0.1;
+  /* Moving platforms */
+  for(const m of movingPlats){
+    m.x += m.speed * m.dir;
+    if(m.x >= m.x1 || m.x <= m.x0) m.dir *= -1;
+  }
 
-/* movement */
-if(keys.left)p.vx=-3.2;
-else if(keys.right)p.vx=3.2;
-else p.vx*=0.85;
+  /* Horizontal */
+  if(keys.left)       player.vx = -SPEED;
+  else if(keys.right) player.vx = SPEED;
+  else                player.vx *= 0.80;
 
-p.vy+=0.55;
+  /* Gravity */
+  player.vy += GRAVITY;
+  if(player.vy > 18) player.vy = 18;
 
-p.x+=p.vx;
-p.y+=p.vy;
+  /* Coyote time */
+  if(player.onGround) player.coyoteTime = 6;
+  else if(player.coyoteTime > 0) player.coyoteTime--;
 
-p.onGround=false;
+  /* Jump buffer */
+  if(player.jumpBuffer > 0) player.jumpBuffer--;
 
-for(let b of plat){
-if(p.x<b.x+b.w && p.x+p.w>b.x &&
-p.y<b.y+b.h && p.y+p.h>b.y){
+  /* Jump */
+  if(player.jumpBuffer > 0 && (player.coyoteTime > 0)){
+    player.vy = -JUMP_POWER;
+    player.coyoteTime = 0;
+    player.jumpBuffer = 0;
+    spawnJumpParticles();
+  }
 
-p.y=b.y-p.h;
-p.vy=0;
-p.onGround=true;
+  player.x += player.vx;
+  player.y += player.vy;
+  player.onGround = false;
+
+  /* Collide all platforms */
+  const allP = [...platforms, ...movingPlats];
+  for(const b of allP){
+    if(player.x < b.x+b.w && player.x+P_W > b.x &&
+       player.y < b.y+b.h && player.y+P_H > b.y){
+      const fromTop    = player.y + P_H - b.y;
+      const fromBottom = b.y + b.h - player.y;
+      const fromLeft   = player.x + P_W - b.x;
+      const fromRight  = b.x + b.w - player.x;
+      const min = Math.min(fromTop,fromBottom,fromLeft,fromRight);
+      if(min === fromTop && player.vy >= 0){
+        player.y = b.y - P_H;
+        player.vy = 0;
+        player.onGround = true;
+      } else if(min === fromBottom && player.vy < 0){
+        player.y = b.y + b.h;
+        player.vy = 0;
+      } else if(min === fromLeft){
+        player.x = b.x - P_W;
+      } else if(min === fromRight){
+        player.x = b.x + b.w;
+      }
+    }
+  }
+
+  /* Spike / void collision */
+  for(const s of spikes){
+    if(player.x < s.x+s.w && player.x+P_W > s.x &&
+       player.y < s.y+s.h && player.y+P_H > s.y){
+      die();
+      return;
+    }
+  }
+  if(player.y > H + 100) die();
+
+  /* Left wall */
+  if(player.x < 0) player.x = 0;
+
+  /* Win */
+  if(player.x+P_W > goal.x && player.x < goal.x+goal.w &&
+     player.y+P_H > goal.y && player.y < goal.y+goal.h){
+    win();
+    return;
+  }
+
+  /* Camera */
+  const targetCamX = player.x - W * 0.35;
+  camX += (targetCamX - camX) * 0.1;
+  if(camX < 0) camX = 0;
+  if(camX > LEVEL_W - W) camX = LEVEL_W - W;
+
+  /* Trail */
+  player.trail.unshift({x:player.x+P_W/2, y:player.y+P_H/2});
+  if(player.trail.length > 12) player.trail.pop();
+
+  /* Progress */
+  const pct = Math.min(100, ((player.x / (goal.x - 100)) * 100)).toFixed(0);
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  /* Particles */
+  particles = particles.filter(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.1; p.life--;
+    return p.life>0;
+  });
 }
-}
 
-/* win */
-if(p.x>goal.x && p.x<goal.x+goal.w &&
-p.y>goal.y && p.y<goal.y+goal.h){
-win();
-}
-}
-
-/* DRAW */
+/* ═══════════════════════════════════════
+   DRAW
+═══════════════════════════════════════ */
 function draw(){
+  ctx.clearRect(0,0,W,H);
 
-camX += (p.x - camX - c.width/2)*0.08;
+  /* Background gradient */
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#050712');
+  bg.addColorStop(1,'#0a1030');
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,W,H);
 
-ctx.fillStyle="#050712";
-ctx.fillRect(0,0,c.width,c.height);
+  /* Parallax stars */
+  drawStars();
 
-/* glow particles */
-for(let i=0;i<40;i++){
-ctx.fillStyle="rgba(255,255,255,0.05)";
-ctx.fillRect(Math.random()*c.width,Math.random()*c.height,2,2);
+  /* Moving platforms */
+  for(const m of movingPlats){
+    drawPlatform(m, true);
+  }
+
+  /* Static platforms */
+  for(const p of platforms){
+    drawPlatform(p, false);
+  }
+
+  /* Spikes */
+  for(const s of spikes){
+    drawSpikes(s);
+  }
+
+  /* Goal lantern */
+  drawGoal();
+
+  /* Trail */
+  for(let i=player.trail.length-1;i>=0;i--){
+    const alpha = (1 - i/player.trail.length) * 0.25;
+    ctx.fillStyle=`rgba(255,77,109,${alpha})`;
+    const sz = (1 - i/player.trail.length) * P_W * 0.7;
+    ctx.fillRect(player.trail[i].x - sz/2 - camX, player.trail[i].y - sz/2, sz, sz);
+  }
+
+  /* Player */
+  drawPlayer();
+
+  /* Particles */
+  for(const p of particles){
+    ctx.globalAlpha = p.life/p.maxLife;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x - camX, p.y, p.size, p.size);
+  }
+  ctx.globalAlpha=1;
+
+  /* Void bottom hint */
+  const voidH = 40;
+  const voidGrad = ctx.createLinearGradient(0,H-voidH,0,H);
+  voidGrad.addColorStop(0,'rgba(255,30,30,0)');
+  voidGrad.addColorStop(1,'rgba(255,30,30,0.15)');
+  ctx.fillStyle=voidGrad;
+  ctx.fillRect(0,H-voidH,W,voidH);
 }
 
-/* platforms */
-ctx.fillStyle="#182042";
-for(let b of plat){
-ctx.fillRect(b.x-camX,b.y,b.w,b.h);
+function drawStars(){
+  const t = tick * 0.001;
+  for(let i=0;i<120;i++){
+    const sx = ((i*173.7 % LEVEL_W) - camX*0.2) % W;
+    const sy = (i*97.3) % (H*0.85);
+    const alpha = 0.15 + Math.sin(t*2 + i)*0.1;
+    const size = (i%5===0) ? 2 : 1;
+    ctx.fillStyle=`rgba(255,255,255,${alpha})`;
+    ctx.fillRect(sx,sy,size,size);
+  }
 }
 
-/* goal glow */
-ctx.fillStyle="#ffd36b";
-ctx.fillRect(goal.x-camX,goal.y,goal.w,goal.h);
+function drawPlatform(b, moving){
+  const x = b.x - camX;
+  if(x > W+10 || x+b.w < -10) return;
 
-/* player (pulse animation) */
-let pulse = Math.sin(p.t)*2;
+  /* Glow */
+  const color = moving ? '#7b4fff' : '#182042';
+  const glow  = moving ? 'rgba(123,79,255,0.3)' : 'rgba(50,80,200,0.25)';
+  ctx.fillStyle=glow;
+  ctx.fillRect(x-2, b.y-2, b.w+4, b.h+4);
+  ctx.fillStyle=color;
+  ctx.fillRect(x, b.y, b.w, b.h);
 
-ctx.fillStyle="#ff4d6d";
-ctx.fillRect(
-p.x-camX,
-p.y + pulse,
-p.w,
-p.h
-);
+  /* Top edge highlight */
+  ctx.fillStyle = moving ? 'rgba(200,160,255,0.5)' : 'rgba(100,140,255,0.35)';
+  ctx.fillRect(x, b.y, b.w, 2);
 }
 
+function drawSpikes(s){
+  const x = s.x - camX;
+  if(x > W+10 || x+s.w < -10) return;
+  ctx.fillStyle='#ff4444';
+  const count = Math.floor(s.w/8);
+  for(let i=0;i<count;i++){
+    ctx.beginPath();
+    ctx.moveTo(x + i*8, s.y+s.h);
+    ctx.lineTo(x + i*8+4, s.y);
+    ctx.lineTo(x + i*8+8, s.y+s.h);
+    ctx.closePath();
+    ctx.fill();
+  }
+}
+
+function drawGoal(){
+  const x = goal.x - camX;
+  const pulse = Math.sin(tick*0.06)*0.4+0.6;
+
+  /* Glow halo */
+  ctx.save();
+  ctx.globalAlpha=0.15*pulse;
+  ctx.fillStyle='#ffd36b';
+  ctx.beginPath();
+  ctx.arc(x+goal.w/2, goal.y+20, 45, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  /* Pole */
+  ctx.fillStyle='rgba(255,211,107,0.4)';
+  ctx.fillRect(x+goal.w/2-2, goal.y+30, 4, goal.h-30);
+
+  /* Lantern body */
+  ctx.fillStyle=`rgba(255,211,107,${0.7+pulse*0.3})`;
+  ctx.fillRect(x, goal.y, goal.w, 30);
+
+  /* Inner light */
+  ctx.fillStyle='white';
+  ctx.globalAlpha=pulse*0.9;
+  ctx.fillRect(x+8, goal.y+6, goal.w-16, 18);
+  ctx.globalAlpha=1;
+}
+
+function drawPlayer(){
+  const x = player.x - camX;
+  const y = player.y;
+  const pulse = Math.sin(player.t)*1.5;
+
+  /* Body glow */
+  ctx.save();
+  ctx.globalAlpha=0.2;
+  ctx.fillStyle='#ff4d6d';
+  ctx.fillRect(x-4, y+pulse-4, P_W+8, P_H+8);
+  ctx.restore();
+
+  /* Body */
+  ctx.fillStyle='#ff4d6d';
+  ctx.fillRect(x, y+pulse, P_W, P_H);
+
+  /* Face accent */
+  ctx.fillStyle='rgba(255,255,255,0.6)';
+  ctx.fillRect(x+4, y+pulse+4, 4, 4);
+
+  /* Thread/tail line toward start */
+  ctx.save();
+  ctx.strokeStyle='rgba(255,77,109,0.12)';
+  ctx.lineWidth=1;
+  ctx.setLineDash([4,6]);
+  ctx.beginPath();
+  ctx.moveTo(x+P_W/2, y+P_H/2+pulse);
+  ctx.lineTo(0-camX+50, y+P_H/2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* ═══════════════════════════════════════
+   PARTICLES
+═══════════════════════════════════════ */
+function spawnJumpParticles(){
+  for(let i=0;i<8;i++){
+    particles.push({
+      x:player.x+Math.random()*P_W,
+      y:player.y+P_H,
+      vx:(Math.random()-0.5)*2.5,
+      vy:Math.random()*-2.5-0.5,
+      size:Math.random()*3+1,
+      life:20,maxLife:20,
+      color:'#ff4d6d'
+    });
+  }
+}
+
+function spawnWinParticles(){
+  for(let i=0;i<40;i++){
+    const colors=['#ffd36b','#ff4d6d','#fff','#b8aaff'];
+    particles.push({
+      x:goal.x+Math.random()*goal.w,
+      y:goal.y,
+      vx:(Math.random()-0.5)*5,
+      vy:Math.random()*-5-1,
+      size:Math.random()*4+1,
+      life:60,maxLife:60,
+      color:colors[Math.floor(Math.random()*colors.length)]
+    });
+  }
+}
+
+/* Floating hearts */
+function spawnHearts(){
+  const emojis=['❤️','💛','✨','🌟'];
+  for(let i=0;i<8;i++){
+    setTimeout(()=>{
+      const h = document.createElement('div');
+      h.className='heart';
+      h.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      h.style.left = (20+Math.random()*60)+'%';
+      h.style.top  = (50+Math.random()*30)+'%';
+      h.style.animationDelay = (Math.random()*0.5)+'s';
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(), 3000);
+    }, i*180);
+  }
+}
+
+/* ═══════════════════════════════════════
+   GAME LOOP
+═══════════════════════════════════════ */
 function loop(){
-update();
-draw();
-requestAnimationFrame(loop);
+  if(state !== 'playing') return;
+  update();
+  draw();
+  raf = requestAnimationFrame(loop);
 }
 
-/* WIN */
+/* ═══════════════════════════════════════
+   SCREENS
+═══════════════════════════════════════ */
+function startGame(){
+  const intro = document.getElementById('intro');
+  intro.classList.add('fade-out');
+  setTimeout(()=>intro.classList.add('hidden'), 500);
+
+  document.getElementById('bgm').volume=0.35;
+  document.getElementById('bgm').play().catch(()=>{});
+
+  lives = 3;
+  updateLivesDisplay();
+  resetPlayer();
+  player.y = 460;
+  state = 'playing';
+  loop();
+}
+
+function die(){
+  if(state !== 'playing') return;
+  state = 'dead';
+  cancelAnimationFrame(raf);
+
+  /* Flash */
+  const flash = document.getElementById('death-flash');
+  flash.style.opacity='1';
+  setTimeout(()=>flash.style.opacity='0', 300);
+
+  lives--;
+  updateLivesDisplay();
+
+  if(lives <= 0){
+    lives = 3;
+    updateLivesDisplay();
+  }
+
+  setTimeout(()=>{
+    document.getElementById('death-screen').classList.remove('hidden');
+  }, 350);
+}
+
+function respawn(){
+  document.getElementById('death-screen').classList.add('hidden');
+  resetPlayer();
+  player.y = 460;
+  camX = 0;
+  state = 'playing';
+  loop();
+}
+
 function win(){
-document.getElementById("end").classList.remove("hidden");
+  if(state !== 'playing') return;
+  state = 'won';
+  cancelAnimationFrame(raf);
+  spawnWinParticles();
+  draw();
+  spawnHearts();
+
+  setTimeout(()=>{
+    document.getElementById('end').classList.remove('hidden');
+  }, 1200);
 }
 
-/* UI */
+function updateLivesDisplay(){
+  const el = document.getElementById('lives-display');
+  if(el) el.textContent = '♥ '.repeat(lives).trim() || '○';
+}
+
+/* ─── NAVIGATION ─── */
 function openRoom(){
-document.getElementById("end").classList.add("hidden");
-document.getElementById("room").classList.remove("hidden");
+  hide('end');
+  show('room');
 }
-
 function showPhoto(){
-document.getElementById("room").classList.add("hidden");
-document.getElementById("photo").classList.remove("hidden");
+  hide('room');
+  show('photo');
 }
-
+function closePhoto(){
+  hide('photo');
+  show('room');
+}
 function showGift(){
-document.getElementById("room").classList.add("hidden");
-document.getElementById("gift").classList.remove("hidden");
+  hide('room');
+  show('gift');
 }
-
-function back(){
-document.getElementById("photo").classList.add("hidden");
-document.getElementById("room").classList.remove("hidden");
+function showRoom(){
+  hide('photo');
+  hide('gift');
+  show('room');
 }
-
+function show(id){ document.getElementById(id).classList.remove('hidden'); }
+function hide(id){ document.getElementById(id).classList.add('hidden'); }
 </script>
-
 </body>
 </html>
