@@ -25,6 +25,7 @@ html,body{
   background:var(--navy);
   font-family:'Georgia',serif;
   color:var(--text);
+  position: fixed;
 }
 
 canvas{display:block;position:fixed;inset:0;}
@@ -40,7 +41,7 @@ canvas{display:block;position:fixed;inset:0;}
   transition:opacity .5s ease;
 }
 .screen.fade-out{opacity:0;pointer-events:none;}
-.screen.hidden {display:none !important;}
+.screen.hidden{display:none !important;}
 
 .screen h1{
   font-size:clamp(20px,5vw,32px);
@@ -240,12 +241,11 @@ canvas{display:block;position:fixed;inset:0;}
 }
 
 #gift h2{
-  font-size:clamp(14px,4.2vw,20px);
+  font-size:clamp(18px,5vw,26px);
   color:var(--gold);
-  letter-spacing:0.5px;
+  letter-spacing:2px;
   margin:5px 0;
   font-weight:400;
-  line-height: 1.4;
 }
 
 /* ─── FLOATING HEARTS (win) ─── */
@@ -280,6 +280,7 @@ canvas{display:block;position:fixed;inset:0;}
 
 <div id="death-flash"></div>
 
+<!-- HUD -->
 <div id="hud">
   <span id="hud-label">✦ percorso</span>
   <div id="progress-track"><div id="progress-fill"></div></div>
@@ -287,8 +288,10 @@ canvas{display:block;position:fixed;inset:0;}
   <button class="skip-btn" onclick="skipToEnd()">Salta Gioco ⏭️</button>
 </div>
 
+<!-- CANVAS -->
 <canvas id="game"></canvas>
 
+<!-- MOBILE CONTROLS -->
 <div id="controls">
   <div class="ctrl-group">
     <div class="ctrl" id="btn-left">◀</div>
@@ -297,6 +300,7 @@ canvas{display:block;position:fixed;inset:0;}
   <div id="jump-btn" class="ctrl">⤒</div>
 </div>
 
+<!-- ─── INTRO ─── -->
 <div class="screen" id="intro">
   <div class="stars-bg" id="stars-container"></div>
   <h1>Un filo del destino</h1>
@@ -306,6 +310,7 @@ canvas{display:block;position:fixed;inset:0;}
   <button class="btn btn-gold" onclick="startGame()">Inizia il viaggio</button>
 </div>
 
+<!-- ─── DEATH ─── -->
 <div class="screen hidden" id="death-screen">
   <h1 style="font-size:28px;">✦</h1>
   <p style="font-size:18px;margin-bottom:6px;">Sei caduto nel vuoto</p>
@@ -313,6 +318,7 @@ canvas{display:block;position:fixed;inset:0;}
   <button class="btn" onclick="respawn()">Riprovare</button>
 </div>
 
+<!-- ─── END ─── -->
 <div class="screen hidden" id="end">
   <h1>Hai raggiunto la lanterna</h1>
   <div class="divider">✦</div>
@@ -320,6 +326,7 @@ canvas{display:block;position:fixed;inset:0;}
   <button class="btn btn-gold" onclick="openRoom()">Entrare</button>
 </div>
 
+<!-- ─── ROOM ─── -->
 <div class="screen hidden" id="room">
   <h1 style="font-size:20px;margin-bottom:4px;">Stanza segreta</h1>
   <p style="margin-bottom:20px;">Cosa vuoi aprire?</p>
@@ -329,9 +336,10 @@ canvas{display:block;position:fixed;inset:0;}
   </div>
 </div>
 
+<!-- ─── PHOTO ─── -->
 <div class="screen hidden" id="photo">
-  <h1 style="color:var(--gold);font-size:20px;margin-bottom:6px;">Foto preferita insieme ❤️</h1>
-  <p class="caption">"No strength for the journey, then standard bearers will pass you by..." 🕸️</p>
+  <h1 style="color:var(--gold);font-size:20px;margin-bottom:6px;">Per te ❤️</h1>
+  <p class="caption">Ovunque vada, torno sempre da te.</p>
   <div style="margin:18px 0;">
     <img src="foto_coppia.JPG" alt="La nostra foto">
   </div>
@@ -339,9 +347,10 @@ canvas{display:block;position:fixed;inset:0;}
   <button class="btn" style="margin-top:10px;font-size:13px;opacity:0.6;" onclick="showRoom()">← Torna alla stanza</button>
 </div>
 
+<!-- ─── GIFT (TENNIS FIXED) ─── -->
 <div class="screen hidden" id="gift">
   <h1 style="letter-spacing:2px;font-size:18px;">Sfida della Rete 🎾</h1>
-  <p id="tennis-hint" style="font-size: 12px; margin-bottom: 5px;">Trascina o tocca il riquadro per muovere la racchetta rosa!</p>
+  <p style="font-size: 12px; margin-bottom: 5px;">Trascina o tocca il riquadro per muovere la racchetta rosa!</p>
   
   <div id="tennis-container">
     <div id="tennis-net"></div>
@@ -363,7 +372,6 @@ canvas{display:block;position:fixed;inset:0;}
 ═══════════════════════════════════════ */
 (function(){
   const c = document.getElementById('stars-container');
-  if(!c) return;
   for(let i=0;i<80;i++){
     const s = document.createElement('div');
     s.className='star';
@@ -712,7 +720,7 @@ function spawnJumpParticles(){
     particles.push({
       x:player.x+P_W/2, y:player.y+P_H,
       vx:(Math.random()-0.5)*2, vy:Math.random()*-2,
-      size:Math.random()*2+1, life:15, maxLife:15, color='#ff4d6d'
+      size:Math.random()*2+1, life:15, maxLife:15, color:'#ff4d6d'
     });
   }
 }
@@ -794,7 +802,7 @@ function hide(id){ document.getElementById(id).classList.add('hidden'); }
 
 
 /* ═══════════════════════════════════════
-   MINI GIOCO TENNIS
+   MINI JUEGO TENNIS (FIXED & INTERACTIVE)
 ═══════════════════════════════════════ */
 let tennisBall = { x: 150, y: 30, vx: 2, vy: 2 };
 let tennisPaddleX = 135;
@@ -813,7 +821,6 @@ function initTennisGame() {
   tennisPaddleX = 135;
   tStatusEl.textContent = "Fai 3 rimbalzi per sbloccare!";
   tStatusEl.style.color = "var(--text)";
-  document.getElementById('tennis-hint').style.display = "block";
   tennisActive = true;
   
   // Controls for mobile touch
@@ -853,6 +860,9 @@ function tennisTennisLoop() {
     tennisBall.vy *= -1;
   }
 
+  // Net simulation logic fix (re-cross smoothly without trapping)
+  // The net is purely visual background decoration now to avoid blocking the game!
+
   // Paddle bounce (Bottom)
   if (tennisBall.y >= 152 && tennisBall.y <= 162) {
     if (tennisBall.x + 12 >= tennisPaddleX && tennisBall.x <= tennisPaddleX + 50) {
@@ -860,8 +870,8 @@ function tennisTennisLoop() {
       tennisScore++;
       
       if(tennisScore >= 3) {
-        tStatusEl.innerHTML = `Il gioco finale era un indizio, hai capito il regalo?<br><strong style="color:var(--gold); font-size:16px; display:inline-block; margin-top:8px;">Lezione di tennis insieme ❤️</strong>`;
-        document.getElementById('tennis-hint').style.display = "none";
+        tStatusEl.textContent = `🎾 Vittoria! Insieme siamo imbattibili! ❤️`;
+        tStatusEl.style.color = "var(--gold)";
       } else {
         tStatusEl.textContent = `Rimbalzi: ${tennisScore} / 3`;
       }
