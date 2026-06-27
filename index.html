@@ -3,260 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Un filo per te</title>
+<title>Sei pronto?</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-
 :root{
-  --rose:#ff4d6d;
-  --rose-dark:#c9184a;
-  --gold:#ffd36b;
-  --gold-glow:#ffb703;
-  --navy:#050712;
-  --navy2:#0b1430;
-  --navy3:#182042;
-  --text:#f0e6ff;
-  --muted:rgba(240,230,255,0.55);
+  --rose:#ff4d6d;--rose-dark:#c9184a;--gold:#ffd36b;--gold-glow:#ffb703;
+  --navy:#050712;--navy2:#0b1430;--navy3:#182042;
+  --text:#f0e6ff;--muted:rgba(240,230,255,0.55);
 }
-
-html,body{
-  width:100%;height:100%;
-  overflow:hidden;
-  background:var(--navy);
-  font-family:'Georgia',serif;
-  color:var(--text);
-  position: fixed;
-}
-
+html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-family:'Georgia',serif;color:var(--text);position:fixed;}
 canvas{display:block;position:fixed;inset:0;}
-
-/* ─── SCREENS ─── */
-.screen{
-  position:fixed;inset:0;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  text-align:center;
-  padding:24px;
-  z-index:20;
-  background:radial-gradient(ellipse at 50% 40%,#0f1e45,var(--navy) 75%);
-  transition:opacity .5s ease;
-}
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px;z-index:20;background:radial-gradient(ellipse at 50% 40%,#0f1e45,var(--navy) 75%);transition:opacity .5s ease;}
 .screen.fade-out{opacity:0;pointer-events:none;}
 .screen.hidden{display:none !important;}
-
-.screen h1{
-  font-size:clamp(20px,5vw,32px);
-  font-weight:400;
-  letter-spacing:3px;
-  margin-bottom:10px;
-  color:var(--text);
-}
-.screen p{
-  font-size:clamp(13px,3.5vw,16px);
-  color:var(--muted);
-  max-width:320px;
-  line-height:1.6;
-  margin-bottom:8px;
-}
-
-/* star divider */
-.divider{
-  color:var(--gold);
-  letter-spacing:12px;
-  margin:14px 0;
-  font-size:14px;
-}
-
-/* ─── BUTTONS ─── */
-.btn{
-  display:inline-block;
-  margin-top:20px;
-  padding:13px 32px;
-  font-family:'Georgia',serif;
-  font-size:15px;
-  letter-spacing:1.5px;
-  color:var(--text);
-  background:transparent;
-  border:1px solid rgba(240,230,255,0.4);
-  border-radius:40px;
-  cursor:pointer;
-  transition:background .2s, border-color .2s, transform .1s;
-  -webkit-appearance:none;
-}
+.screen h1{font-size:clamp(20px,5vw,32px);font-weight:400;letter-spacing:3px;margin-bottom:10px;color:var(--text);}
+.screen p{font-size:clamp(13px,3.5vw,16px);color:var(--muted);max-width:320px;line-height:1.6;margin-bottom:8px;}
+.divider{color:var(--gold);letter-spacing:12px;margin:14px 0;font-size:14px;}
+.btn{display:inline-block;margin-top:20px;padding:13px 32px;font-family:'Georgia',serif;font-size:15px;letter-spacing:1.5px;color:var(--text);background:transparent;border:1px solid rgba(240,230,255,0.4);border-radius:40px;cursor:pointer;transition:background .2s,border-color .2s,transform .1s;-webkit-appearance:none;}
 .btn:hover{background:rgba(255,255,255,0.07);border-color:rgba(240,230,255,0.7);}
 .btn:active{transform:scale(0.97);}
 .btn-gold{border-color:var(--gold);color:var(--gold);}
 .btn-gold:hover{background:rgba(255,211,107,0.1);}
-
-/* ─── PROGRESS BAR & HUD ─── */
-#hud{
-  position:fixed;top:0;left:0;right:0;
-  display:flex;align-items:center;gap:12px;
-  padding:12px 20px;
-  z-index:15;
-}
-#progress-track{
-  flex:1;height:4px;
-  background:rgba(255,255,255,0.1);
-  border-radius:4px;
-  overflow:hidden;
-}
-#progress-fill{
-  height:100%;
-  background:linear-gradient(90deg,var(--rose),var(--gold));
-  border-radius:4px;
-  width:0%;
-  transition:width .3s ease;
-}
-#hud-label{
-  font-size:12px;letter-spacing:1px;color:var(--muted);white-space:nowrap;
-}
-.skip-btn {
-  pointer-events: auto;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(240,230,255,0.3);
-  color: var(--text);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  cursor: pointer;
-}
-
-/* ─── MOBILE CONTROLS ─── */
-#controls{
-  position:fixed;bottom:0;left:0;right:0;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:16px 24px 24px;
-  z-index:10;
-  pointer-events:none;
-}
+#hud{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;gap:12px;padding:12px 20px;z-index:15;}
+#progress-track{flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;}
+#progress-fill{height:100%;background:linear-gradient(90deg,var(--rose),var(--gold));border-radius:4px;width:0%;transition:width .3s ease;}
+#hud-label{font-size:12px;letter-spacing:1px;color:var(--muted);white-space:nowrap;}
+.skip-btn{pointer-events:auto;background:rgba(255,255,255,0.1);border:1px solid rgba(240,230,255,0.3);color:var(--text);padding:4px 10px;border-radius:12px;font-size:11px;cursor:pointer;}
+#controls{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:16px 24px 24px;z-index:10;pointer-events:none;}
 .ctrl-group{display:flex;gap:10px;pointer-events:all;}
-
-.ctrl{
-  width:58px;height:58px;
-  border:1px solid rgba(240,230,255,0.25);
-  border-radius:16px;
-  background:rgba(10,16,42,0.7);
-  backdrop-filter:blur(6px);
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;
-  color:rgba(240,230,255,0.7);
-  user-select:none;
-  cursor:pointer;
-  touch-action:none;
-  transition:background .1s,border-color .1s;
-}
-.ctrl:active,.ctrl.active{
-  background:rgba(255,77,109,0.2);
-  border-color:rgba(255,77,109,0.6);
-}
-#jump-btn{
-  width:70px;height:70px;
-  border-radius:50%;
-  border-color:rgba(255,211,107,0.35);
-  font-size:26px;
-  pointer-events: all;
-}
+.ctrl{width:58px;height:58px;border:1px solid rgba(240,230,255,0.25);border-radius:16px;background:rgba(10,16,42,0.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;font-size:22px;color:rgba(240,230,255,0.7);user-select:none;cursor:pointer;touch-action:none;transition:background .1s,border-color .1s;}
+.ctrl:active,.ctrl.active{background:rgba(255,77,109,0.2);border-color:rgba(255,77,109,0.6);}
+#jump-btn{width:70px;height:70px;border-radius:50%;border-color:rgba(255,211,107,0.35);font-size:26px;pointer-events:all;}
 #jump-btn:active{background:rgba(255,211,107,0.15);border-color:var(--gold);}
-
-/* ─── INTRO STARS ─── */
-.stars-bg{
-  position:absolute;inset:0;overflow:hidden;pointer-events:none;
-}
-.star{
-  position:absolute;
-  border-radius:50%;
-  background:white;
-  animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);
-  opacity:0;
-}
-@keyframes twinkle{
-  0%,100%{opacity:0;}
-  50%{opacity:var(--max-op,0.8);}
-}
-
-/* ─── END / ROOM ─── */
-.room-grid{
-  display:flex;flex-direction:column;gap:14px;width:100%;max-width:300px;
-}
-
-/* ─── TENNIS MINI-GAME INSIDE GIFT ─── */
-#tennis-container {
-  width: 100%;
-  max-width: 320px;
-  height: 180px;
-  background: #111936;
-  border: 2px solid var(--gold);
-  border-radius: 12px;
-  position: relative;
-  overflow: hidden;
-  margin: 15px 0;
-  touch-action: none;
-}
-#tennis-paddle {
-  position: absolute;
-  bottom: 10px;
-  left: 135px;
-  width: 50px;
-  height: 8px;
-  background: var(--rose);
-  border-radius: 4px;
-}
-#tennis-ball {
-  position: absolute;
-  top: 20px;
-  left: 150px;
-  width: 12px;
-  height: 12px;
-  background: #ccff00;
-  border-radius: 50%;
-}
-#tennis-net {
-  position: absolute;
-  top: 90px;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: rgba(255,255,255,0.3);
-}
-
-#gift h2{
-  font-size:clamp(18px,5vw,26px);
-  color:var(--gold);
-  letter-spacing:2px;
-  margin:5px 0;
-  font-weight:400;
-}
-
-/* ─── FLOATING HEARTS (win) ─── */
-.heart{
-  position:fixed;
-  pointer-events:none;
-  font-size:clamp(16px,4vw,24px);
-  animation:floatHeart 2.5s ease-out forwards;
-  z-index:30;
-}
-@keyframes floatHeart{
-  0%{transform:translateY(0) scale(1);opacity:1;}
-  100%{transform:translateY(-60vh) scale(0.5);opacity:0;}
-}
-
-/* ─── DEATH FLASH ─── */
-#death-flash{
-  position:fixed;inset:0;
-  background:rgba(255,30,30,0.25);
-  pointer-events:none;
-  z-index:25;
-  opacity:0;
-  transition:opacity .15s;
-}
+.stars-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);opacity:0;}
+@keyframes twinkle{0%,100%{opacity:0;}50%{opacity:var(--max-op,0.8);}}
+.room-grid{display:flex;flex-direction:column;gap:14px;width:100%;max-width:300px;}
+#tennis-container{width:100%;max-width:320px;height:180px;background:#111936;border:2px solid var(--gold);border-radius:12px;position:relative;overflow:hidden;margin:15px 0;touch-action:none;}
+#tennis-paddle{position:absolute;bottom:10px;left:135px;width:50px;height:8px;background:var(--rose);border-radius:4px;}
+#tennis-ball{position:absolute;top:20px;left:150px;width:12px;height:12px;background:#ccff00;border-radius:50%;}
+#tennis-net{position:absolute;top:90px;left:0;width:100%;height:4px;background:rgba(255,255,255,0.3);}
+#gift h2{font-size:clamp(18px,5vw,26px);color:var(--gold);letter-spacing:2px;margin:5px 0;font-weight:400;}
+.heart{position:fixed;pointer-events:none;font-size:clamp(16px,4vw,24px);animation:floatHeart 2.5s ease-out forwards;z-index:30;}
+@keyframes floatHeart{0%{transform:translateY(0) scale(1);opacity:1;}100%{transform:translateY(-60vh) scale(0.5);opacity:0;}}
+#death-flash{position:fixed;inset:0;background:rgba(255,30,30,0.25);pointer-events:none;z-index:25;opacity:0;transition:opacity .15s;}
 </style>
 </head>
 <body>
-
-<audio id="bgm" loop>
-  <source src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b6b2c7c2.mp3" type="audio/mp3">
-</audio>
-
 <div id="death-flash"></div>
 
 <!-- HUD -->
@@ -264,10 +57,9 @@ canvas{display:block;position:fixed;inset:0;}
   <span id="hud-label">✦ percorso</span>
   <div id="progress-track"><div id="progress-fill"></div></div>
   <span style="font-size:11px;color:var(--muted);" id="lives-display">♥️ ♥️ ♥️</span>
-  <button class="skip-btn" onclick="skipToEnd()">Salta Gioco ⏭️</button>
+  <button class="skip-btn" onclick="skipToEnd()">Salta ⏭️</button>
 </div>
 
-<!-- CANVAS -->
 <canvas id="game"></canvas>
 
 <!-- MOBILE CONTROLS -->
@@ -282,33 +74,32 @@ canvas{display:block;position:fixed;inset:0;}
 <!-- ─── INTRO ─── -->
 <div class="screen" id="intro">
   <div class="stars-bg" id="stars-container"></div>
-  <h1>Un filo del destino</h1>
+  <h1>Sei pronto a scoprire il tuo regalo?</h1>
   <div class="divider">✦ ✦ ✦</div>
-  <p>Tre prove. Un solo segreto nascosto tra le stelle.</p>
-  <p style="font-size:12px;color:var(--muted);margin-top:4px;">Usa i tasti o le frecce sullo schermo.</p>
-  <button class="btn btn-gold" onclick="startGame()">Inizia il viaggio</button>
+  <p>Ti aspettano delle prove per scoprire il tuo regalo.</p>
+  <p style="font-size:12px;color:var(--muted);margin-top:4px;">Usa i tasti freccia o i pulsanti sullo schermo.</p>
+  <button class="btn btn-gold" onclick="startGame()">Inizia l'avventura</button>
 </div>
 
 <!-- ─── DEATH ─── -->
 <div class="screen hidden" id="death-screen">
   <h1 style="font-size:28px;">✦</h1>
   <p style="font-size:18px;margin-bottom:6px;">Sei caduto nel vuoto</p>
-  <p>Ma il filo ti riporta sempre qui.</p>
-  <button class="btn" onclick="respawn()">Riprovare</button>
+  <button class="btn" onclick="respawn()" style="margin-top:16px;">Riprova</button>
 </div>
 
 <!-- ─── END ─── -->
 <div class="screen hidden" id="end">
-  <h1>Hai raggiunto la lanterna</h1>
+  <h1>Bravissimo! Ultima sfida 🎁</h1>
   <div class="divider">✦</div>
-  <p>Una stanza segreta si apre nel silenzio…</p>
-  <button class="btn btn-gold" onclick="openRoom()">Entrare</button>
+  <p style="color:var(--gold);font-size:13px;">(ps: è un indizio per il tuo regalo)</p>
+  <button class="btn btn-gold" onclick="openRoom()" style="margin-top:24px;">Scopri di più</button>
 </div>
 
 <!-- ─── ROOM ─── -->
 <div class="screen hidden" id="room">
-  <h1 style="font-size:20px;margin-bottom:4px;">Stanza segreta</h1>
-  <p style="margin-bottom:20px;">Hai trovato l’ultimo indizio…</p>
+  <h1 style="font-size:20px;margin-bottom:4px;">Ultima sfida</h1>
+  <p style="margin-bottom:20px;">Completa la sfida per svelare il regalo…</p>
   <div class="room-grid">
     <button class="btn btn-gold" onclick="showGift()">🎾 &nbsp;Sfida della Rete</button>
   </div>
@@ -317,19 +108,16 @@ canvas{display:block;position:fixed;inset:0;}
 <!-- ─── GIFT / TENNIS ─── -->
 <div class="screen hidden" id="gift">
   <h1 style="letter-spacing:2px;font-size:18px;">Sfida della Rete 🎾</h1>
-  <p style="font-size: 12px; margin-bottom: 5px;">Trascina o tocca il riquadro per muovere la racchetta rosa!</p>
-  
+  <p style="font-size:12px;margin-bottom:5px;">Trascina o tocca il riquadro per muovere la racchetta rosa!</p>
   <div id="tennis-container">
     <div id="tennis-net"></div>
     <div id="tennis-ball"></div>
     <div id="tennis-paddle"></div>
   </div>
-
   <h2 id="tennis-status">Fai 3 rimbalzi per sbloccare!</h2>
-  
   <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;justify-content:center;">
-    <button class="btn btn-gold" onclick="resetTennisGame()">↺ Riavvia Tennis</button>
-    <button class="btn" onclick="showRoom()">← Stanza</button>
+    <button class="btn btn-gold" onclick="resetTennisGame()">↺ Riavvia</button>
+    <button class="btn" onclick="showRoom()">← Indietro</button>
   </div>
 </div>
 
@@ -337,13 +125,162 @@ canvas{display:block;position:fixed;inset:0;}
 <div class="screen hidden" id="final-gift">
   <h1>🎁 Hai scoperto il regalo</h1>
   <div class="divider">✦ ✦ ✦</div>
-  <p>Il gioco finale era un indizio.</p>
   <p style="margin-top:15px;">Hai capito il regalo?</p>
-  <h2 style="color:var(--gold);margin:20px 0;font-size:24px;">🎾 Lezione di tennis insieme!</h2>
+  <h2 style="color:var(--gold);margin:20px 0;font-size:24px;">🎾 Lezione di tennis insieme! 🎾</h2>
   <p>Ti voglio bene ❤️</p>
 </div>
 
 <script>
+/* ═══════════════════════════════════════
+   WEB AUDIO — MELODIA ALLEGRA E ROMANTICA
+   Arpeggio carillon + melodia cantabile in Do maggiore
+═══════════════════════════════════════ */
+let audioCtx = null;
+let musicStarted = false;
+let melTimer = null;
+let arpTimer = null;
+
+function startMusic() {
+  if (musicStarted) return;
+  musicStarted = true;
+
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // Reverb corto e luminoso
+  const convolver = audioCtx.createConvolver();
+  const revLen = audioCtx.sampleRate * 1.0;
+  const revBuf = audioCtx.createBuffer(2, revLen, audioCtx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = revBuf.getChannelData(ch);
+    for (let i = 0; i < revLen; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / revLen, 4);
+  }
+  convolver.buffer = revBuf;
+
+  const master = audioCtx.createGain();
+  master.gain.setValueAtTime(0, audioCtx.currentTime);
+  master.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 1.5);
+  master.connect(audioCtx.destination);
+
+  const dry = audioCtx.createGain(); dry.gain.value = 0.72; dry.connect(master);
+  const wet = audioCtx.createGain(); wet.gain.value = 0.28;
+  convolver.connect(wet); wet.connect(master);
+
+  const bpm = 116;
+  const q = 60 / bpm;       // quarto
+  const e = q / 2;           // croma
+
+  // ── Arpeggio carillon grazioso (C E G C' E') ──
+  const arpChords = [
+    [261.6, 329.6, 392, 523.2],   // C maj
+    [261.6, 329.6, 392, 523.2],
+    [293.7, 369.9, 440, 587.3],   // D min
+    [261.6, 329.6, 392, 523.2],   // C maj
+    [246.9, 311.1, 392, 493.9],   // B dim → G7
+    [261.6, 329.6, 392, 523.2],   // C maj
+    [220,   261.6, 329.6, 440],   // A min
+    [246.9, 311.1, 392, 493.9],   // G7
+  ];
+  let arpBar = 0, arpNote = 0;
+
+  function playArp() {
+    if (!audioCtx) return;
+    const chord = arpChords[arpBar % arpChords.length];
+    const freq = chord[arpNote % chord.length];
+    const t = audioCtx.currentTime;
+
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.048, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + e * 2.8);
+    o.connect(g); g.connect(convolver); g.connect(dry);
+    o.start(t); o.stop(t + e * 3);
+
+    // Basso leggero su primo e terzo quarto della battuta
+    if (arpNote === 0 || arpNote === 4) {
+      const bass = audioCtx.createOscillator();
+      const bg = audioCtx.createGain();
+      bass.type = 'sine'; bass.frequency.value = chord[0] / 2;
+      bg.gain.setValueAtTime(0.09, t);
+      bg.gain.exponentialRampToValueAtTime(0.001, t + q * 0.7);
+      bass.connect(bg); bg.connect(dry);
+      bass.start(t); bass.stop(t + q * 0.8);
+    }
+
+    arpNote++;
+    if (arpNote >= 8) { arpNote = 0; arpBar++; }
+    arpTimer = setTimeout(playArp, e * 1000);
+  }
+  arpTimer = setTimeout(playArp, 100);
+
+  // ── Melodia principale dolce e cantabile ──
+  // Scala Do maggiore: C5 D5 E5 F5 G5 A5 B5 C6
+  const sc = [523.2, 587.3, 659.3, 698.5, 783.9, 880, 987.8, 1046.5];
+  // Melodia in stile valzer romantico (indici, -1 = pausa)
+  const mel = [
+    4,4,5,4, 2,0,-1,-1,
+    3,3,4,3, 1,-1,-1,-1,
+    4,5,6,5, 4,2,0,-1,
+    2,4,7,6, 5,4,2,-1,
+    4,4,5,4, 2,0,-1,-1,
+    3,5,4,3, 1,0,-1,-1,
+    0,2,4,5, 6,5,4,2,
+    0,-1,-1,-1,-1,-1,-1,-1,
+  ];
+  let mStep = 0;
+
+  function playMel() {
+    if (!audioCtx) return;
+    const idx = mel[mStep % mel.length];
+    mStep++;
+
+    if (idx >= 0 && idx < sc.length) {
+      const t = audioCtx.currentTime;
+      const freq = sc[idx];
+
+      // Timbro dolce: sine + soffio di armonica
+      const o1 = audioCtx.createOscillator();
+      const o2 = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      const g2 = audioCtx.createGain();
+      o1.type = 'sine'; o1.frequency.value = freq;
+      o2.type = 'sine'; o2.frequency.value = freq * 2; // ottava sopra
+      g2.gain.value = 0.12;
+      o2.connect(g2); g2.connect(g);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.11, t + 0.035);
+      g.gain.setValueAtTime(0.11, t + q * 0.5);
+      g.gain.exponentialRampToValueAtTime(0.001, t + q * 1.5);
+      o1.connect(g); g.connect(convolver); g.connect(dry);
+      o1.start(t); o1.stop(t + q * 1.6);
+      o2.start(t); o2.stop(t + q * 1.6);
+
+      // Scintilla campanella sulle note acute
+      if (freq >= 880) {
+        const bell = audioCtx.createOscillator();
+        const bg = audioCtx.createGain();
+        bell.type = 'sine'; bell.frequency.value = freq * 1.5;
+        bg.gain.setValueAtTime(0.022, t + 0.03);
+        bg.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+        bell.connect(bg); bg.connect(convolver);
+        bell.start(t + 0.03); bell.stop(t + 0.9);
+      }
+    }
+
+    melTimer = setTimeout(playMel, q * 1000);
+  }
+  // Melodia entra dopo 2 battute di intro arpeggio
+  melTimer = setTimeout(playMel, e * 16 * 1000);
+}
+
+function stopMusic() {
+  if (!audioCtx) return;
+  clearTimeout(melTimer); clearTimeout(arpTimer);
+  audioCtx.close();
+  audioCtx = null; musicStarted = false;
+}
+
+
 /* ═══════════════════════════════════════
    STARS BACKGROUND
 ═══════════════════════════════════════ */
@@ -352,20 +289,14 @@ canvas{display:block;position:fixed;inset:0;}
   for(let i=0;i<80;i++){
     const s = document.createElement('div');
     s.className='star';
-    const size = Math.random()*2.5+0.5;
-    s.style.cssText=`
-      width:${size}px;height:${size}px;
-      left:${Math.random()*100}%;top:${Math.random()*100}%;
-      --d:${(Math.random()*3+2).toFixed(1)}s;
-      --delay:-${(Math.random()*5).toFixed(1)}s;
-      --max-op:${(Math.random()*0.6+0.2).toFixed(2)};
-    `;
+    const sz = Math.random()*2.5+0.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*3+2).toFixed(1)}s;--delay:-${(Math.random()*5).toFixed(1)}s;--max-op:${(Math.random()*0.6+0.2).toFixed(2)};`;
     c.appendChild(s);
   }
 })();
 
 /* ═══════════════════════════════════════
-   CANVAS SETUP (RESPONSIVE)
+   CANVAS SETUP
 ═══════════════════════════════════════ */
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -381,516 +312,270 @@ window.addEventListener('resize', resize);
 /* ═══════════════════════════════════════
    GAME STATE
 ═══════════════════════════════════════ */
-const GRAVITY   = 0.45;
-const JUMP_POWER= 11.5;
-const SPEED     = 4.0;
-const LEVEL_W   = 3600;
-
-let state = 'menu';
-let lives = 3;
-let camX  = 0;
-let particles = [];
-let tick = 0;
-let raf = null;
-
-const P_W = 18, P_H = 22;
+const GRAVITY=0.45, JUMP_POWER=11.5, SPEED=4.0, LEVEL_W=3600;
+let state='menu', lives=3, camX=0, particles=[], tick=0, raf=null;
+const P_W=18, P_H=22;
 let player;
 
 function resetPlayer(){
-  player = {
-    x:90, y: H ? H - 120 : 300,
-    vx:0, vy:0,
-    onGround:false,
-    coyoteTime:0,
-    jumpBuffer:0,
-    t:0,
-    trail:[]
-  };
+  player={x:90, y:H?H-120:300, vx:0, vy:0, onGround:false, coyoteTime:0, jumpBuffer:0, t:0, trail:[]};
 }
 
-let platforms = [];
-let movingPlats = [];
-let spikes = [];
-let goal = {x:3470, y:150, w:30, h:55};
+let platforms=[], movingPlats=[], spikes=[], goal={x:3470,y:150,w:30,h:55};
 
-function adjustPlatforms() {
-  const baseH = H - 80; 
-  platforms = [
-    {x:0,   y:baseH, w:280, h:120},
-    {x:340, y:baseH - 50, w:120, h:120},
-    {x:510, y:baseH - 110, w:100, h:150},
-    {x:680, y:baseH - 170, w:100, h:200},
-    {x:850, y:baseH - 220, w:90,  h:250},
-    {x:1010,y:baseH - 270, w:70,  h:300},
-    {x:1140,y:baseH - 220, w:70,  h:300},
-    {x:1270,y:baseH - 280, w:70,  h:350},
-    {x:1420,y:baseH - 200, w:160, h:300},
-    {x:1660,y:baseH - 120, w:80,  h:200},
-    {x:1810,y:baseH - 180, w:80,  h:250},
-    {x:1960,y:baseH - 240, w:80,  h:300},
-    {x:2100,y:baseH - 300, w:80,  h:350},
-    {x:2250,y:baseH - 240, w:55,  h:300},
-    {x:2380,y:baseH - 300, w:55,  h:350},
-    {x:2510,y:baseH - 240, w:55,  h:300},
-    {x:2640,y:baseH - 180, w:55,  h:250},
-    {x:2780,y:baseH - 140, w:160, h:200},
-    {x:3020,y:baseH - 200, w:80,  h:250},
-    {x:3160,y:baseH - 260, w:80,  h:300},
-    {x:3300,y:baseH - 320, w:80,  h:350},
-    {x:3440,y:baseH - 380, w:160, h:450},
+function adjustPlatforms(){
+  const b=H-80;
+  platforms=[
+    {x:0,y:b,w:280,h:120},{x:340,y:b-50,w:120,h:120},{x:510,y:b-110,w:100,h:150},
+    {x:680,y:b-170,w:100,h:200},{x:850,y:b-220,w:90,h:250},{x:1010,y:b-270,w:70,h:300},
+    {x:1140,y:b-220,w:70,h:300},{x:1270,y:b-280,w:70,h:350},{x:1420,y:b-200,w:160,h:300},
+    {x:1660,y:b-120,w:80,h:200},{x:1810,y:b-180,w:80,h:250},{x:1960,y:b-240,w:80,h:300},
+    {x:2100,y:b-300,w:80,h:350},{x:2250,y:b-240,w:55,h:300},{x:2380,y:b-300,w:55,h:350},
+    {x:2510,y:b-240,w:55,h:300},{x:2640,y:b-180,w:55,h:250},{x:2780,y:b-140,w:160,h:200},
+    {x:3020,y:b-200,w:80,h:250},{x:3160,y:b-260,w:80,h:300},{x:3300,y:b-320,w:80,h:350},
+    {x:3440,y:b-380,w:160,h:450},
   ];
-
-  movingPlats = [
-    {x:600, y:baseH - 80, w:90, h:18, x0:600, x1:760, speed:1.4, dir:1},
-    {x:1800,y:baseH - 100, w:80, h:18, x0:1750,x1:1950,speed:1.6, dir:1},
-    {x:3100,y:baseH - 140, w:80, h:18, x0:3050,x1:3200,speed:2.0, dir:1},
+  movingPlats=[
+    {x:600,y:b-80,w:90,h:18,x0:600,x1:760,speed:1.4,dir:1},
+    {x:1800,y:b-100,w:80,h:18,x0:1750,x1:1950,speed:1.6,dir:1},
+    {x:3100,y:b-140,w:80,h:18,x0:3050,x1:3200,speed:2.0,dir:1},
   ];
-
-  spikes = [
-    {x:280, y:baseH + 6, w:60,  h:10},
-    {x:490, y:baseH - 116, w:20,  h:10},
-    {x:1000,y:baseH - 276, w:10,  h:10},
-    {x:1265,y:baseH - 286, w:10,  h:10},
-    {x:2240,y:baseH - 246, w:10,  h:10},
-    {x:2640,y:baseH - 186, w:10,  h:10},
-    {x:3295,y:baseH - 326, w:10,  h:10},
+  spikes=[
+    {x:280,y:b+6,w:60,h:10},{x:490,y:b-116,w:20,h:10},{x:1000,y:b-276,w:10,h:10},
+    {x:1265,y:b-286,w:10,h:10},{x:2240,y:b-246,w:10,h:10},{x:2640,y:b-186,w:10,h:10},
+    {x:3295,y:b-326,w:10,h:10},
   ];
-
-  goal.x = 3480;
-  goal.y = baseH - 435;
+  goal.x=3480; goal.y=b-435;
 }
 resize();
 
-/* ═══════════════════════════════════════
-   INPUT CONTROLS
-═══════════════════════════════════════ */
-const keys = {left:false, right:false, jump:false};
-
-document.addEventListener('keydown', e=>{
-  if(e.key==='ArrowLeft'||e.key==='a')  keys.left=true;
+/* ─── INPUT ─── */
+const keys={left:false,right:false,jump:false};
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a') keys.left=true;
   if(e.key==='ArrowRight'||e.key==='d') keys.right=true;
-  if(e.key===' '||e.key==='ArrowUp'||e.key==='w'){
-    e.preventDefault();
-    keys.jump=true;
-    if(player) player.jumpBuffer=10;
-  }
+  if(e.key===' '||e.key==='ArrowUp'||e.key==='w'){e.preventDefault();keys.jump=true;if(player)player.jumpBuffer=10;}
 });
-document.addEventListener('keyup', e=>{
-  if(e.key==='ArrowLeft'||e.key==='a')  keys.left=false;
+document.addEventListener('keyup',e=>{
+  if(e.key==='ArrowLeft'||e.key==='a') keys.left=false;
   if(e.key==='ArrowRight'||e.key==='d') keys.right=false;
   if(e.key===' '||e.key==='ArrowUp'||e.key==='w') keys.jump=false;
 });
-
-function bindBtn(id, key){
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.addEventListener('pointerdown', e=>{ e.preventDefault(); keys[key]=true; el.classList.add('active'); });
-  el.addEventListener('pointerup',   e=>{ e.preventDefault(); keys[key]=false; el.classList.remove('active'); });
-  el.addEventListener('pointerleave',e=>{ keys[key]=false; el.classList.remove('active'); });
+function bindBtn(id,key){
+  const el=document.getElementById(id);if(!el)return;
+  el.addEventListener('pointerdown',e=>{e.preventDefault();keys[key]=true;el.classList.add('active');});
+  el.addEventListener('pointerup',e=>{e.preventDefault();keys[key]=false;el.classList.remove('active');});
+  el.addEventListener('pointerleave',e=>{keys[key]=false;el.classList.remove('active');});
 }
-bindBtn('btn-left','left');
-bindBtn('btn-right','right');
-
-document.getElementById('jump-btn').addEventListener('pointerdown', e=>{
-  e.preventDefault();
-  if(player) player.jumpBuffer=10;
+bindBtn('btn-left','left'); bindBtn('btn-right','right');
+document.getElementById('jump-btn').addEventListener('pointerdown',e=>{
+  e.preventDefault(); if(player)player.jumpBuffer=10;
   document.getElementById('jump-btn').classList.add('active');
 });
-document.getElementById('jump-btn').addEventListener('pointerup', (e)=>{ e.preventDefault(); document.getElementById('jump-btn').classList.remove('active'); });
+document.getElementById('jump-btn').addEventListener('pointerup',e=>{e.preventDefault();document.getElementById('jump-btn').classList.remove('active');});
 
-/* SKIP GAME FUNCTION */
-function skipToEnd() {
-  cancelAnimationFrame(raf);
-  state = 'won';
-  hide('intro');
-  hide('death-screen');
-  show('end');
-}
+function skipToEnd(){cancelAnimationFrame(raf);state='won';hide('intro');hide('death-screen');show('end');}
 
-/* ═══════════════════════════════════════
-   PHYSICS / UPDATE
-═══════════════════════════════════════ */
+/* ─── PHYSICS ─── */
 function update(){
-  tick++;
-  player.t += 0.12;
-
-  for(const m of movingPlats){
-    m.x += m.speed * m.dir;
-    if(m.x >= m.x1 || m.x <= m.x0) m.dir *= -1;
+  tick++; player.t+=0.12;
+  for(const m of movingPlats){m.x+=m.speed*m.dir;if(m.x>=m.x1||m.x<=m.x0)m.dir*=-1;}
+  if(keys.left) player.vx=-SPEED;
+  else if(keys.right) player.vx=SPEED;
+  else player.vx*=0.75;
+  player.vy+=GRAVITY; if(player.vy>15)player.vy=15;
+  if(player.onGround) player.coyoteTime=6;
+  else if(player.coyoteTime>0) player.coyoteTime--;
+  if(player.jumpBuffer>0) player.jumpBuffer--;
+  if(player.jumpBuffer>0&&player.coyoteTime>0){
+    player.vy=-JUMP_POWER; player.coyoteTime=0; player.jumpBuffer=0; spawnJumpParticles();
   }
-
-  if(keys.left)       player.vx = -SPEED;
-  else if(keys.right) player.vx = SPEED;
-  else                player.vx *= 0.75;
-
-  player.vy += GRAVITY;
-  if(player.vy > 15) player.vy = 15;
-
-  if(player.onGround) player.coyoteTime = 6;
-  else if(player.coyoteTime > 0) player.coyoteTime--;
-
-  if(player.jumpBuffer > 0) player.jumpBuffer--;
-
-  if(player.jumpBuffer > 0 && (player.coyoteTime > 0)){
-    player.vy = -JUMP_POWER;
-    player.coyoteTime = 0;
-    player.jumpBuffer = 0;
-    spawnJumpParticles();
-  }
-
-  player.x += player.vx;
-  player.y += player.vy;
-  player.onGround = false;
-
-  const allP = [...platforms, ...movingPlats];
-  for(const b of allP){
-    if(player.x < b.x+b.w && player.x+P_W > b.x &&
-       player.y < b.y+b.h && player.y+P_H > b.y){
-      const fromTop    = player.y + P_H - b.y;
-      const fromBottom = b.y + b.h - player.y;
-      const fromLeft   = player.x + P_W - b.x;
-      const fromRight  = b.x + b.w - player.x;
-      const min = Math.min(fromTop,fromBottom,fromLeft,fromRight);
-      if(min === fromTop && player.vy >= 0){
-        player.y = b.y - P_H;
-        player.vy = 0;
-        player.onGround = true;
-      } else if(min === fromBottom && player.vy < 0){
-        player.y = b.y + b.h;
-        player.vy = 0;
-      } else if(min === fromLeft){
-        player.x = b.x - P_W;
-      } else if(min === fromRight){
-        player.x = b.x + b.w;
-      }
+  player.x+=player.vx; player.y+=player.vy; player.onGround=false;
+  for(const b of [...platforms,...movingPlats]){
+    if(player.x<b.x+b.w&&player.x+P_W>b.x&&player.y<b.y+b.h&&player.y+P_H>b.y){
+      const fT=player.y+P_H-b.y,fB=b.y+b.h-player.y,fL=player.x+P_W-b.x,fR=b.x+b.w-player.x;
+      const mn=Math.min(fT,fB,fL,fR);
+      if(mn===fT&&player.vy>=0){player.y=b.y-P_H;player.vy=0;player.onGround=true;}
+      else if(mn===fB&&player.vy<0){player.y=b.y+b.h;player.vy=0;}
+      else if(mn===fL){player.x=b.x-P_W;}
+      else if(mn===fR){player.x=b.x+b.w;}
     }
   }
-
   for(const s of spikes){
-    if(player.x < s.x+s.w && player.x+P_W > s.x &&
-       player.y < s.y+s.h && player.y+P_H > s.y){
-      die();
-      return;
-    }
+    if(player.x<s.x+s.w&&player.x+P_W>s.x&&player.y<s.y+s.h&&player.y+P_H>s.y){die();return;}
   }
-  if(player.y > H + 50) { die(); return; }
-  if(player.x < 0) player.x = 0;
-
-  if(player.x+P_W > goal.x && player.x < goal.x+goal.w &&
-     player.y+P_H > goal.y && player.y < goal.y+goal.h){
-    win();
-    return;
-  }
-
-  const targetCamX = player.x - W * 0.35;
-  camX += (targetCamX - camX) * 0.1;
-  if(camX < 0) camX = 0;
-  if(camX > LEVEL_W - W) camX = LEVEL_W - W;
-
-  player.trail.unshift({x:player.x+P_W/2, y:player.y+P_H/2});
-  if(player.trail.length > 10) player.trail.pop();
-
-  const pct = Math.min(100, ((player.x / (goal.x - 100)) * 100)).toFixed(0);
-  document.getElementById('progress-fill').style.width = pct + '%';
-
-  particles = particles.filter(p=>{
-    p.x+=p.vx; p.y+=p.vy; p.vy+=0.08; p.life--;
-    return p.life>0;
-  });
+  if(player.y>H+50){die();return;}
+  if(player.x<0)player.x=0;
+  if(player.x+P_W>goal.x&&player.x<goal.x+goal.w&&player.y+P_H>goal.y&&player.y<goal.y+goal.h){win();return;}
+  const tgt=player.x-W*0.35;
+  camX+=(tgt-camX)*0.1;
+  if(camX<0)camX=0; if(camX>LEVEL_W-W)camX=LEVEL_W-W;
+  player.trail.unshift({x:player.x+P_W/2,y:player.y+P_H/2});
+  if(player.trail.length>10)player.trail.pop();
+  const pct=Math.min(100,(player.x/(goal.x-100)*100)).toFixed(0);
+  document.getElementById('progress-fill').style.width=pct+'%';
+  particles=particles.filter(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.08;p.life--;return p.life>0;});
 }
 
-/* ═══════════════════════════════════════
-   DRAW GRAPHICS
-═══════════════════════════════════════ */
+/* ─── DRAW ─── */
 function draw(){
   ctx.clearRect(0,0,W,H);
-
-  const bg = ctx.createLinearGradient(0,0,0,H);
-  bg.addColorStop(0,'#050712');
-  bg.addColorStop(1,'#0a1030');
-  ctx.fillStyle=bg;
-  ctx.fillRect(0,0,W,H);
-
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#050712'); bg.addColorStop(1,'#0a1030');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
   drawStars();
-
-  for(const m of movingPlats) drawPlatform(m, true);
-  for(const p of platforms) drawPlatform(p, false);
-  for(const s of spikes) drawSpikes(s);
+  for(const m of movingPlats)drawPlatform(m,true);
+  for(const p of platforms)drawPlatform(p,false);
+  for(const s of spikes)drawSpikes(s);
   drawGoal();
-
   for(let i=player.trail.length-1;i>=0;i--){
-    const alpha = (1 - i/player.trail.length) * 0.25;
-    ctx.fillStyle=`rgba(255,77,109,${alpha})`;
-    const sz = (1 - i/player.trail.length) * P_W * 0.7;
-    ctx.fillRect(player.trail[i].x - sz/2 - camX, player.trail[i].y - sz/2, sz, sz);
+    const a=(1-i/player.trail.length)*0.25;
+    ctx.fillStyle=`rgba(255,77,109,${a})`;
+    const sz=(1-i/player.trail.length)*P_W*0.7;
+    ctx.fillRect(player.trail[i].x-sz/2-camX,player.trail[i].y-sz/2,sz,sz);
   }
-
   drawPlayer();
-
-  for(const p of particles){
-    ctx.globalAlpha = p.life/p.maxLife;
-    ctx.fillStyle = p.color;
-    ctx.fillRect(p.x - camX, p.y, p.size, p.size);
-  }
+  for(const p of particles){ctx.globalAlpha=p.life/p.maxLife;ctx.fillStyle=p.color;ctx.fillRect(p.x-camX,p.y,p.size,p.size);}
   ctx.globalAlpha=1;
 }
-
 function drawStars(){
-  const t = tick * 0.001;
+  const t=tick*0.001;
   for(let i=0;i<60;i++){
-    const sx = ((i*173.7 % LEVEL_W) - camX*0.2) % W;
-    const sy = (i*97.3) % (H*0.8);
-    const alpha = 0.15 + Math.sin(t*2 + i)*0.1;
-    ctx.fillStyle=`rgba(255,255,255,${alpha})`;
+    const sx=((i*173.7%LEVEL_W)-camX*0.2)%W;
+    const sy=(i*97.3)%(H*0.8);
+    ctx.fillStyle=`rgba(255,255,255,${0.15+Math.sin(t*2+i)*0.1})`;
     ctx.fillRect(sx,sy,1.5,1.5);
   }
 }
-
-function drawPlatform(b, moving){
-  const x = b.x - camX;
-  if(x > W+10 || x+b.w < -10) return;
-  const color = moving ? '#7b4fff' : '#182042';
-  ctx.fillStyle=color;
-  ctx.fillRect(x, b.y, b.w, b.h);
-  ctx.fillStyle = moving ? '#c8a0ff' : '#2e3b6e';
-  ctx.fillRect(x, b.y, b.w, 3);
+function drawPlatform(b,moving){
+  const x=b.x-camX;
+  if(x>W+10||x+b.w<-10)return;
+  ctx.fillStyle=moving?'#7b4fff':'#182042'; ctx.fillRect(x,b.y,b.w,b.h);
+  ctx.fillStyle=moving?'#c8a0ff':'#2e3b6e'; ctx.fillRect(x,b.y,b.w,3);
 }
-
 function drawSpikes(s){
-  const x = s.x - camX;
-  if(x > W+10 || x+s.w < -10) return;
+  const x=s.x-camX;
+  if(x>W+10||x+s.w<-10)return;
   ctx.fillStyle='#ff4444';
-  const count = Math.floor(s.w/8);
-  for(let i=0;i<count;i++){
-    ctx.beginPath();
-    ctx.moveTo(x + i*8, s.y+s.h);
-    ctx.lineTo(x + i*8+4, s.y);
-    ctx.lineTo(x + i*8+8, s.y+s.h);
-    ctx.closePath();
-    ctx.fill();
-  }
+  const count=Math.floor(s.w/8);
+  for(let i=0;i<count;i++){ctx.beginPath();ctx.moveTo(x+i*8,s.y+s.h);ctx.lineTo(x+i*8+4,s.y);ctx.lineTo(x+i*8+8,s.y+s.h);ctx.closePath();ctx.fill();}
 }
-
 function drawGoal(){
-  const x = goal.x - camX;
-  const pulse = Math.sin(tick*0.06)*0.3+0.7;
-  ctx.fillStyle='rgba(255,211,107,0.4)';
-  ctx.fillRect(x+goal.w/2-2, goal.y+30, 4, goal.h-30);
-  ctx.fillStyle=`rgba(255,211,107,${0.7+pulse*0.3})`;
-  ctx.fillRect(x, goal.y, goal.w, 30);
-  ctx.fillStyle='white';
-  ctx.fillRect(x+8, goal.y+6, goal.w-16, 18);
+  const x=goal.x-camX;
+  const pulse=Math.sin(tick*0.06)*0.3+0.7;
+  ctx.fillStyle='rgba(255,211,107,0.4)'; ctx.fillRect(x+goal.w/2-2,goal.y+30,4,goal.h-30);
+  ctx.fillStyle=`rgba(255,211,107,${0.7+pulse*0.3})`; ctx.fillRect(x,goal.y,goal.w,30);
+  ctx.fillStyle='white'; ctx.fillRect(x+8,goal.y+6,goal.w-16,18);
 }
-
 function drawPlayer(){
-  const x = player.x - camX;
-  const y = player.y;
-  const pulse = Math.sin(player.t)*1.2;
-  ctx.fillStyle='#ff4d6d';
-  ctx.fillRect(x, y+pulse, P_W, P_H);
-  ctx.fillStyle='rgba(255,255,255,0.7)';
-  ctx.fillRect(x+10, y+pulse+4, 4, 4);
+  const x=player.x-camX, y=player.y, pulse=Math.sin(player.t)*1.2;
+  ctx.fillStyle='#ff4d6d'; ctx.fillRect(x,y+pulse,P_W,P_H);
+  ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.fillRect(x+10,y+pulse+4,4,4);
 }
-
 function spawnJumpParticles(){
-  for(let i=0;i<5;i++){
-    particles.push({
-      x:player.x+P_W/2, y:player.y+P_H,
-      vx:(Math.random()-0.5)*2, vy:Math.random()*-2,
-      size:Math.random()*2+1, life:15, maxLife:15, color:'#ff4d6d'
-    });
-  }
+  for(let i=0;i<5;i++)particles.push({x:player.x+P_W/2,y:player.y+P_H,vx:(Math.random()-0.5)*2,vy:Math.random()*-2,size:Math.random()*2+1,life:15,maxLife:15,color:'#ff4d6d'});
 }
-
 function spawnHearts(){
-  const emojis=['❤️','✨','🎾','🌟'];
+  const em=['❤️','✨','🎾','🌟'];
   for(let i=0;i<6;i++){
     setTimeout(()=>{
-      const h = document.createElement('div');
-      h.className='heart';
-      h.textContent=emojis[Math.floor(Math.random()*emojis.length)];
-      h.style.left = (30+Math.random()*40)+'%';
-      h.style.top  = (40+Math.random()*30)+'%';
-      document.body.appendChild(h);
-      setTimeout(()=>h.remove(), 2000);
-    }, i*200);
+      const h=document.createElement('div');
+      h.className='heart'; h.textContent=em[Math.floor(Math.random()*em.length)];
+      h.style.left=(30+Math.random()*40)+'%'; h.style.top=(40+Math.random()*30)+'%';
+      document.body.appendChild(h); setTimeout(()=>h.remove(),2500);
+    },i*200);
   }
 }
 
-/* ═══════════════════════════════════════
-   GAME LOOP
-═══════════════════════════════════════ */
-function loop(){
-  if(state !== 'playing') return;
-  update();
-  draw();
-  raf = requestAnimationFrame(loop);
-}
+/* ─── LOOP ─── */
+function loop(){if(state!=='playing')return;update();draw();raf=requestAnimationFrame(loop);}
 
 function startGame(){
   hide('intro');
-  document.getElementById('bgm').volume=0.25;
-  document.getElementById('bgm').play().catch(()=>{});
-  lives = 3;
-  updateLivesDisplay();
-  resetPlayer();
-  state = 'playing';
-  loop();
+  startMusic();
+  lives=3; updateLivesDisplay(); resetPlayer(); state='playing'; loop();
 }
-
 function die(){
-  state = 'dead';
-  cancelAnimationFrame(raf);
+  state='dead'; cancelAnimationFrame(raf);
   document.getElementById('death-flash').style.opacity='1';
-  setTimeout(()=>document.getElementById('death-flash').style.opacity='0', 200);
-  lives--;
-  updateLivesDisplay();
-  setTimeout(()=>{ show('death-screen'); }, 300);
+  setTimeout(()=>document.getElementById('death-flash').style.opacity='0',200);
+  lives--; updateLivesDisplay();
+  setTimeout(()=>show('death-screen'),300);
 }
-
-function respawn(){
-  hide('death-screen');
-  resetPlayer();
-  camX = 0;
-  state = 'playing';
-  loop();
-}
-
-function win(){
-  state = 'won';
-  cancelAnimationFrame(raf);
-  spawnHearts();
-  setTimeout(()=>{ show('end'); }, 1000);
-}
-
+function respawn(){hide('death-screen');resetPlayer();camX=0;state='playing';loop();}
+function win(){state='won';cancelAnimationFrame(raf);spawnHearts();setTimeout(()=>show('end'),1000);}
 function updateLivesDisplay(){
-  const el = document.getElementById('lives-display');
-  if(el) el.textContent = '♥️ '.repeat(lives).trim() || '○';
+  const el=document.getElementById('lives-display');
+  if(el)el.textContent='♥️ '.repeat(Math.max(0,lives)).trim()||'○';
 }
 
 /* ─── NAVIGATION ─── */
-function openRoom(){ hide('end'); show('room'); }
-function showGift(){ hide('room'); show('gift'); initTennisGame(); }
-function showRoom() { hide('gift'); hide('final-gift'); show('room'); stopTennisGame(); }
-function show(id){ document.getElementById(id).classList.remove('hidden'); }
-function hide(id){ document.getElementById(id).classList.add('hidden'); }
-
+function openRoom(){hide('end');show('room');}
+function showGift(){hide('room');show('gift');initTennisGame();}
+function showRoom(){hide('gift');hide('final-gift');show('room');stopTennisGame();}
+function show(id){document.getElementById(id).classList.remove('hidden');}
+function hide(id){document.getElementById(id).classList.add('hidden');}
 
 /* ═══════════════════════════════════════
-   MINI JUEGO TENNIS (FIXED & INTERACTIVE)
+   TENNIS MINI-GAME
 ═══════════════════════════════════════ */
-let tennisBall = { x: 150, y: 30, vx: 2, vy: 2 };
-let tennisPaddleX = 135;
-let tennisScore = 0;
-let tennisRaf = null;
-let tennisActive = false;
+let tennisBall={x:150,y:30,vx:2,vy:2};
+let tennisPaddleX=135, tennisScore=0, tennisRaf=null, tennisActive=false;
+const tContainer=document.getElementById('tennis-container');
+const tBallEl=document.getElementById('tennis-ball');
+const tPaddleEl=document.getElementById('tennis-paddle');
+const tStatusEl=document.getElementById('tennis-status');
 
-const tContainer = document.getElementById('tennis-container');
-const tBallEl = document.getElementById('tennis-ball');
-const tPaddleEl = document.getElementById('tennis-paddle');
-const tStatusEl = document.getElementById('tennis-status');
-
-function initTennisGame() {
-  tennisScore = 0;
-  tennisBall = { x: 150, y: 20, vx: Math.random() > 0.5 ? 2.2 : -2.2, vy: 2.2 };
-  tennisPaddleX = 135;
-  tStatusEl.textContent = "Fai 3 rimbalzi per sbloccare!";
-  tStatusEl.style.color = "var(--text)";
-  tennisActive = true;
-  
-  // Controls for mobile touch
-  tContainer.addEventListener('pointermove', handleTennisMove);
-  tContainer.addEventListener('touchmove', handleTennisMove, {passive: false});
-
-  if(!tennisRaf) tennisTennisLoop();
+function initTennisGame(){
+  tennisScore=0;
+  tennisBall={x:150,y:20,vx:Math.random()>0.5?2.2:-2.2,vy:2.2};
+  tennisPaddleX=135;
+  tStatusEl.textContent="Fai 3 rimbalzi per sbloccare!";
+  tStatusEl.style.color="var(--text)";
+  tennisActive=true;
+  tContainer.addEventListener('pointermove',handleTennisMove);
+  tContainer.addEventListener('touchmove',handleTennisMove,{passive:false});
+  if(!tennisRaf)tennisTennisLoop();
 }
-
-function handleTennisMove(e) {
+function handleTennisMove(e){
   e.preventDefault();
-  const rect = tContainer.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  let relX = clientX - rect.left;
-  tennisPaddleX = relX - 25; // center paddle
-  if(tennisPaddleX < 0) tennisPaddleX = 0;
-  if(tennisPaddleX > 270) tennisPaddleX = 270;
-  tPaddleEl.style.left = tennisPaddleX + 'px';
+  const rect=tContainer.getBoundingClientRect();
+  const clientX=e.touches?e.touches[0].clientX:e.clientX;
+  tennisPaddleX=Math.max(0,Math.min(270,clientX-rect.left-25));
+  tPaddleEl.style.left=tennisPaddleX+'px';
 }
-
-function tennisTennisLoop() {
-  if (!tennisActive) {
-    tennisRaf = null;
-    return;
-  }
-
-  // Physics update
-  tennisBall.x += tennisBall.vx;
-  tennisBall.y += tennisBall.vy;
-
-  // Wall bounce (Left/Right)
-  if (tennisBall.x <= 0 || tennisBall.x >= 308) {
-    tennisBall.vx *= -1;
-  }
-  // Top bounce
-  if (tennisBall.y <= 0) {
-    tennisBall.vy *= -1;
-  }
-
-  // Net simulation logic fix (re-cross smoothly without trapping)
-  // The net is purely visual background decoration now to avoid blocking the game!
-
-  // Paddle bounce (Bottom)
-  if (tennisBall.y >= 152 && tennisBall.y <= 162) {
-    if (tennisBall.x + 12 >= tennisPaddleX && tennisBall.x <= tennisPaddleX + 50) {
-      tennisBall.vy = -Math.abs(tennisBall.vy); // Force Up
+function tennisTennisLoop(){
+  if(!tennisActive){tennisRaf=null;return;}
+  tennisBall.x+=tennisBall.vx; tennisBall.y+=tennisBall.vy;
+  if(tennisBall.x<=0||tennisBall.x>=308) tennisBall.vx*=-1;
+  if(tennisBall.y<=0) tennisBall.vy*=-1;
+  if(tennisBall.y>=152&&tennisBall.y<=162){
+    if(tennisBall.x+12>=tennisPaddleX&&tennisBall.x<=tennisPaddleX+50){
+      tennisBall.vy=-Math.abs(tennisBall.vy);
       tennisScore++;
-      
-      if(tennisScore >= 3) {
-        tStatusEl.innerHTML = `
-          🎾 Indizio sbloccato...<br>
-          Il gioco finale era un indizio.
-        `;
-        tStatusEl.style.color = "var(--gold)";
-        tennisActive = false;
-
-        setTimeout(()=>{
-          hide('gift');
-          show('final-gift');
-          spawnHearts();
-        }, 1500);
+      if(tennisScore>=3){
+        tStatusEl.innerHTML='🎾 Indizio sbloccato…';
+        tStatusEl.style.color='var(--gold)';
+        tennisActive=false;
+        setTimeout(()=>{hide('gift');show('final-gift');spawnHearts();},1500);
       } else {
-        tStatusEl.textContent = `Rimbalzi: ${tennisScore} / 3`;
+        tStatusEl.textContent=`Rimbalzi: ${tennisScore} / 3`;
       }
     }
   }
-
-  // Reset ball if drops past bottom
-  if (tennisBall.y > 180) {
-    tennisBall.x = 150;
-    tennisBall.y = 20;
-    tennisBall.vy = 2.2;
-    tennisBall.vx = (Math.random() - 0.5) * 4;
-    if(tennisScore < 3) {
-      tennisScore = 0;
-      tStatusEl.textContent = "Ops! Riprova, fai 3 rimbalzi!";
-    }
+  if(tennisBall.y>180){
+    tennisBall={x:150,y:20,vy:2.2,vx:(Math.random()-0.5)*4};
+    if(tennisScore<3){tennisScore=0;tStatusEl.textContent="Ops! Riprova, fai 3 rimbalzi!";}
   }
-
-  // Sync Elements
-  tBallEl.style.left = tennisBall.x + 'px';
-  tBallEl.style.top = tennisBall.y + 'px';
-
-  tennisRaf = requestAnimationFrame(tennisTennisLoop);
+  tBallEl.style.left=tennisBall.x+'px';
+  tBallEl.style.top=tennisBall.y+'px';
+  tennisRaf=requestAnimationFrame(tennisTennisLoop);
 }
-
-function resetTennisGame() {
-  stopTennisGame();
-  initTennisGame();
-}
-
-function stopTennisGame() {
-  tennisActive = false;
-  if(tennisRaf) cancelAnimationFrame(tennisRaf);
-  tennisRaf = null;
+function resetTennisGame(){stopTennisGame();initTennisGame();}
+function stopTennisGame(){
+  tennisActive=false;
+  if(tennisRaf)cancelAnimationFrame(tennisRaf);
+  tennisRaf=null;
 }
 </script>
 </body>
